@@ -2,7 +2,7 @@
 ## Title-zhCN: 魔兽世界中文维基
 ## Notes-zhCN: 用于维基所需的游戏数据收集。
 ## SavedVariables: WikiData
-## Author: Leo
+## Author: gjfLeo
 ## Version: 1.0.0
 
 cnwiki-quest.lua

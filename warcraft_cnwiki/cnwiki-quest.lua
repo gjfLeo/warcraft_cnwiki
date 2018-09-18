@@ -3,6 +3,16 @@ WikiData = WikiData or {}
 WikiData[locale] = WikiData[locale] or {}
 WikiData[locale].Quest = WikiData[locale].Quest or {}
 
+
+local version, build = GetBuildInfo()
+local collectorInfo = {
+	["addonVersion"] = GetAddOnMetadata("warcraft_cnwiki", "Version"),
+	["gameVersion"] = version .. "." .. build,
+	["timestamp"] = time(), -- 打开游戏的时间
+	["convertFrom"] = nil
+}
+
+
 -- 用于替换玩家名字等
 local function Replace(str)
 	str = string.gsub(str, UnitName("player"), "<玩家名字>")
@@ -63,6 +73,8 @@ local function CollectDetail()
 		temp.frequency = LE_QUEST_FREQUENCY_WEEKLY
 	end
 	
+	temp.collectorInfo = collectorInfo
+	
 	WikiData[locale].Quest[questID] = temp
 end
 
@@ -81,6 +93,8 @@ local function CollectProgress()
 	-- Header 也就是任务日志里面这个任务属于哪个组
 	temp.header = GetQuestHeader(GetQuestLogIndexByID(questID))
 	
+	temp.collectorInfo = collectorInfo
+	
 	WikiData[locale].Quest[questID] = temp
 end
 
@@ -98,6 +112,8 @@ local function CollectComplete()
 	
 	-- Header 也就是任务日志里面这个任务属于哪个组
 	temp.header = GetQuestHeader(GetQuestLogIndexByID(questID))
+	
+	temp.collectorInfo = collectorInfo
 	
 	WikiData[locale].Quest[questID] = temp
 end
@@ -135,6 +151,8 @@ local function CollectQuestLogQuest(questIndex)
 	-- Header 也就是任务日志里面这个任务属于哪个组
 	temp.header = GetQuestHeader(questIndex)
 	
+	temp.collectorInfo = collectorInfo
+	
 	WikiData[locale].Quest[questID] = temp
 end
 
@@ -149,16 +167,18 @@ local function DataConvert_Update()
 end
 local function DataConvert_cn_wiki()
 	for questID, old in pairs(wikiDB.questInfo) do
-		local temp = WikiData[locale].Quest[questID] or {}
+		local temp = WikiData.zhCN.Quest[questID] or {}
 		temp.title = temp.title or old.title
 		temp.description = temp.description or old.questDescription
 		temp.objective = temp.objective or old.questObjectives
-		WikiData[locale].Quest[questID] = temp
+		temp.collectorInfo = temp.collectorInfo or {}
+		temp.collectorInfo.convertFrom = "cn_wiki"
+		WikiData.zhCN.Quest[questID] = temp
 	end
 end
 local function DataConvert_Leo()
 	for questID, old in pairs(LeoData.Quest) do
-		local temp = WikiData[locale].Quest[questID] or {}
+		local temp = WikiData.zhCN.Quest[questID] or {}
 		temp.title = temp.title or old.Title
 		temp.objective = temp.objective or old.Objective
 		temp.description = temp.description or old.Description
@@ -167,6 +187,9 @@ local function DataConvert_Leo()
 		temp.header = temp.header or old.Header or old.Questline
 		temp.startNpc = temp.startNpc or old.StartNpc
 		temp.finishNpc = temp.finishNpc or old.FinishNpc
+		temp.collectorInfo = temp.collectorInfo or {}
+		temp.collectorInfo.convertFrom = "Leo"
+		WikiData.zhCN.Quest[questID] = temp
 	end
 end
 
@@ -181,13 +204,13 @@ f:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		CollectQuestLog()
 		DataConvert_Update()
+		if IsAddOnLoaded("Leo") then
+			DataConvert_Leo()
+		end
 		if IsAddOnLoaded("cn_wiki") then
 			DataConvert_cn_wiki()
 			DisableAddOn("cn_wiki")
 			print("旧cn_wiki插件的数据已转换完毕，已自动禁用")
-		end
-		if IsAddOnLoaded("Leo") then
-			DataConvert_Leo()
 		end
 	elseif event == "QUEST_DETAIL" then
 		CollectDetail()

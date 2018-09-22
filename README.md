@@ -3,7 +3,7 @@
 
 在游戏中使用此插件即可自动收集任务数据。
 
-数据记录在lua文件中，路径为World of Warcraft\WTF\Account\<账号>\SavedVariables\warcraft_cnwiki.lua
+数据记录在lua文件中，路径为World of Warcraft\WTF\Account\\<账号>\SavedVariables\warcraft_cnwiki.lua
 
 ## 任务数据
 以下情况会自动记录任务数据：

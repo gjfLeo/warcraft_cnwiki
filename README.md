@@ -3,4 +3,4 @@
 
 更多说明见https://github.com/gjfLeo/warcraft_cnwiki/wiki
 
-有建议和反馈请向作者联系。邮箱：gjfLeo@yeah.net，QQ：1272823636。
+有建议和反馈请向作者联系。
